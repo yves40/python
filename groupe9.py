@@ -190,11 +190,14 @@ def InitialisePartie (nbjoueurs,nbcartes) :
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 04 2019, 1.30'
+Version = 'groupe9: Dec 04 2019, 1.31'
 
 # Players
 NomJoueur = ['Margote', 'Yves', 'Charles','Antoine','Cathy']
+NBCARDSFORPLAYERS = 4
 # Players hands
+# Initializing this array is no longer necessary as we'll fill it 
+# by calling InitialisePartie()
 main = [
     [('2','pique'),('3', 'carreau')],
     [('V', 'coeur'),('5', 'pique')],
@@ -206,7 +209,7 @@ main = [
 # Some preliminary tasks
 couleurs = ['pique','trefle','coeur','carreau']
 valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
-main = InitialisePartie(len(NomJoueur), 2)
+main = InitialisePartie(len(NomJoueur), NBCARDSFORPLAYERS)
 #paquet = fabriquepaquet()
 #paquet = fisherYatesMelange(paquet)
 #gamers, pioche = distribuer(10, 5, paquet)
