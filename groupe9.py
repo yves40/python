@@ -7,42 +7,6 @@ import sys
 import random
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
-def fabriquepaquet():
-  paquet=[]
-  lenvaleur = len(valeur)
-  for i in range (lenenseigne) :
-    for j in range (lenvaleur) :
-      paquet.append((valeur[j],enseigne[i]))
-  return paquet
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def fisherYatesMelange(paquet):
-  lenpaquet = len(paquet)
-  for i in range (lenpaquet) :
-    j = random.randint (0,i)
-    (paquet[i],paquet[j])=(paquet[j],paquet[i])
-  return paquet
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def distribuer(N,J,paquet):
-  joueurs =[]
-  paquetmelange = paquet[:]
-  paquetrestant = []
-  taillepaquetmelange = len(paquetmelange)
-  compt=0
-
-  for i in range(J):
-    joueurs.append([]) #initialise le nombre de joueurs
-            
-  for j in range (J) :
-    for n in range (N) : #rempli les mains des joueurs
-      joueurs[j].append(paquetmelange[compt])
-      compt+=1
-      for k in range (compt,taillepaquetmelange):
-        paquetrestant.append(paquetmelange[k])
-    return joueurs , paquetrestant
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
 def InitialisePartie (N,J) :
   paquet = fabriquepaquet()
   paquetmelange = fisherYatesMelange(paquet)
@@ -165,7 +129,7 @@ def lookatplayers(players, cards):
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Remove players with no more cards
 #--------------------------------------------------------------------------------------------------------------------------------------------
-def shootlosers(main) :
+def shootloosers(main) :
     while True:
         found = False
         for i in range(0, len(main)-1):
@@ -178,10 +142,55 @@ def shootlosers(main) :
             break
 
     return main
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Get a card set
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def fabriquepaquet():
+  paquet=[]
+  lenvaleur = len(valeur)
+  for i in range(len(couleurs)) :
+    for j in range (lenvaleur) :
+      paquet.append((valeur[j],couleurs[i]))
+  return paquet
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Mix the card set 
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def fisherYatesMelange(paquet):
+  lenpaquet = len(paquet)
+  for i in range (lenpaquet) :
+    j = random.randint (0,i)
+    (paquet[i],paquet[j])=(paquet[j],paquet[i])
+  return paquet
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Distribute cards to N players
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def distribuer(nbcartes,nbjoueurs,paquet):
+    joueurs =[]
+    paquetmelange = paquet[:]
+    paquetrestant = []
+    taillepaquetmelange = len(paquetmelange)
+    compt=0
+
+    for i in range(nbjoueurs):
+        joueurs.append([]) #initialise le nombre de joueurs
+                
+    for j in range (nbjoueurs) :
+        for n in range (nbcartes) : #rempli les mains des joueurs
+            joueurs[j].append(paquetmelange[compt])
+            compt+=1
+            for k in range (compt,taillepaquetmelange):
+                paquetrestant.append(paquetmelange[k])
+
+    return joueurs , paquetrestant
+
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 04 2019, 1.21'
+Version = 'groupe9: Dec 04 2019, 1.26'
 
 # Players
 NomJoueur = ['Margote', 'Yves', 'Charles','Antoine','Cathy']
@@ -194,22 +203,25 @@ main = [
     [('7', 'carreau'),('R', 'trefle')]
 ]
 
-Final =[]
-enseigne = ['pique','trefle','coeur','carreau']
-valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','as']
+# Some preliminary tasks
+couleurs = ['pique','trefle','coeur','carreau']
+valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
+paquet = fabriquepaquet()
+paquet = fisherYatesMelange(paquet)
+gamers, pioche = distribuer(10, 5, paquet)
 
 # Some welcome message before starting the fight !!!
 print Version
 
 lookatplayers(NomJoueur, main)
-getString('Start game <CR>', False)
+getString('\n\nStart game <CR>', False)
 
 # Now start serious things
 while len(main[0])>=1 :
     plateau, main = tourdejeu(main)                     # Put cards on the table
     print len(main), ' players still in the game'   
     main = testbataille(plateau,main)                   # Play
-    main = shootlosers(main)                            # Are there any looser ? 
+    main = shootloosers(main)                            # Are there any looser ? Yes remove them from the game
     lookatplayers(NomJoueur, main)
     getString('Next tour <CR>', False)
 
