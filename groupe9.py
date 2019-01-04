@@ -4,6 +4,7 @@
 #   Dec 04 2019 Initial (brought to me by Charlie)
 #--------------------------------------------------------------------------------------------------------------------------------------------
 import sys
+import random
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
 def fabriquepaquet():
@@ -17,7 +18,6 @@ def fabriquepaquet():
 #--------------------------------------------------------------------------------------------------------------------------------------------
 def fisherYatesMelange(paquet):
   lenpaquet = len(paquet)
-  import random
   for i in range (lenpaquet) :
     j = random.randint (0,i)
     (paquet[i],paquet[j])=(paquet[j],paquet[i])
@@ -114,8 +114,6 @@ def tourdejeu (main) :
     plateau.append (main[i][0])
     del main[i][0]
 
-  print('plateau   : ', plateau)
-  print('La main   : ', main)    
   return plateau,main
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Determines whon wins the tour
@@ -151,36 +149,68 @@ def testbataille(plateau,main) :
         main = bataille(indice,plateau,main)
         
     return main
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Dump players and cards
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def lookatplayers(players, cards):
+    print '\n ========== P L A Y E R S ===============\n'
+    for p in players:
+        playerindex =  players.index(p)
+        playercards = cards[playerindex]
+        print 'Player : ',p, ' [', len(playercards), ']'
+        for card in playercards:
+            print '\t', card
+    print
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Remove players with no more cards
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def shootlosers(main) :
+    while True:
+        found = False
+        for i in range(0, len(main)-1):
+            if not main[i]:
+                del main[i]
+                print NomJoueur[i], ' has lost'
+                del NomJoueur[i]
+                found = True
+        if not found:
+            break
+
+    return main
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 04 2019, 1.08'
+Version = 'groupe9: Dec 04 2019, 1.21'
 
 # Players
-NomJoueur = ['Yves', 'Charles','Antoine','Margo']
+NomJoueur = ['Margote', 'Yves', 'Charles','Antoine','Cathy']
 # Players hands
 main = [
     [('2','pique'),('3', 'carreau')],
     [('V', 'coeur'),('5', 'pique')],
     [('D', 'pique'),('7', 'coeur')],
-    [('8', 'carreau'),('as', 'carreau')]
+    [('8', 'carreau'),('as', 'carreau')],
+    [('7', 'carreau'),('R', 'trefle')]
 ]
 
 Final =[]
 enseigne = ['pique','trefle','coeur','carreau']
 valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','as']
 
+# Some welcome message before starting the fight !!!
 print Version
-print 'Hello players, welcome'
-for p in NomJoueur:
-  print 'Player : ', p
 
-while len(main[0])>1 :
-    plateau, main = tourdejeu(main)
-    print 'Still ', len(main), ' players in the game'
-    plateau,main = testbataille(plateau,main)
-    getString('<CR> for next tour please ', False)
+lookatplayers(NomJoueur, main)
+getString('Start game <CR>', False)
 
-#    Plateau,main = tourdejeu(main)
-#    Plateau,main = testbataille(Plateau,main)
+# Now start serious things
+while len(main[0])>=1 :
+    plateau, main = tourdejeu(main)                     # Put cards on the table
+    print len(main), ' players still in the game'   
+    main = testbataille(plateau,main)                   # Play
+    main = shootlosers(main)                            # Are there any looser ? 
+    lookatplayers(NomJoueur, main)
+    getString('Next tour <CR>', False)
+
         
