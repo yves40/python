@@ -7,13 +7,6 @@ import sys
 import random
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
-def InitialisePartie (N,J) :
-  paquet = fabriquepaquet()
-  paquetmelange = fisherYatesMelange(paquet)
-  return distribuer(N,J,paquetmelange)
-
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
 def bataille (indice,plateau,main) :
  
     cartesbataille = []
@@ -185,12 +178,19 @@ def distribuer(nbcartes,nbjoueurs,paquet):
             for k in range (compt,taillepaquetmelange):
                 paquetrestant.append(paquetmelange[k])
 
-    return joueurs , paquetrestant
+    return joueurs
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def InitialisePartie (nbjoueurs,nbcartes) :
+  paquet = fabriquepaquet()
+  paquetmelange = fisherYatesMelange(paquet)
+  return distribuer(nbcartes, nbjoueurs, paquetmelange)
+
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 04 2019, 1.26'
+Version = 'groupe9: Dec 04 2019, 1.30'
 
 # Players
 NomJoueur = ['Margote', 'Yves', 'Charles','Antoine','Cathy']
@@ -206,9 +206,10 @@ main = [
 # Some preliminary tasks
 couleurs = ['pique','trefle','coeur','carreau']
 valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
-paquet = fabriquepaquet()
-paquet = fisherYatesMelange(paquet)
-gamers, pioche = distribuer(10, 5, paquet)
+main = InitialisePartie(len(NomJoueur), 2)
+#paquet = fabriquepaquet()
+#paquet = fisherYatesMelange(paquet)
+#gamers, pioche = distribuer(10, 5, paquet)
 
 # Some welcome message before starting the fight !!!
 print Version
