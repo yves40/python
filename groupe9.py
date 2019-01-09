@@ -93,8 +93,14 @@ def meilleurCarte (liste) :
 def testbataille(plateau,main) :
     indice = []
     nbdecarte = len(plateau)
+
+    print nbdecarte, ' cards on the table...'
+    for card in plateau:
+        print '\t', card
+
     meilleurecarte = meilleurCarte(plateau)
-    
+    print meilleurecarte[0], ' ', meilleurecarte[1], ' Wins'
+
     for i in range (nbdecarte) :
         if valeur.index(plateau[i][0]) == valeur.index(meilleurecarte[0]):
             indice.append(i)
@@ -181,6 +187,8 @@ def distribuer(nbcartes,nbjoueurs,paquet):
     return joueurs
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
+# Begin a new game
+#--------------------------------------------------------------------------------------------------------------------------------------------
 def InitialisePartie (nbjoueurs,nbcartes) :
   paquet = fabriquepaquet()
   paquetmelange = fisherYatesMelange(paquet)
@@ -190,11 +198,11 @@ def InitialisePartie (nbjoueurs,nbcartes) :
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 04 2019, 1.31'
+Version = 'groupe9: Dec 09 2019, 1.34'
 
 # Players
 NomJoueur = ['Margote', 'Yves', 'Charles','Antoine','Cathy']
-NBCARDSFORPLAYERS = 4
+NBCARDSFORPLAYERS = 3
 # Players hands
 # Initializing this array is no longer necessary as we'll fill it 
 # by calling InitialisePartie()
@@ -225,7 +233,7 @@ while len(main[0])>=1 :
     plateau, main = tourdejeu(main)                     # Put cards on the table
     print len(main), ' players still in the game'   
     main = testbataille(plateau,main)                   # Play
-    main = shootloosers(main)                            # Are there any looser ? Yes remove them from the game
+    main = shootloosers(main)                           # Are there any looser ? Yes remove them from the game
     lookatplayers(NomJoueur, main)
     getString('Next tour <CR>', False)
 
