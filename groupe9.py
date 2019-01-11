@@ -2,6 +2,7 @@
 #   groupe9.py
 #
 #   Dec 04 2019 Initial (brought to me by Charlie)
+#   Dec 11 2019 Test number of players remaining and finish the game
 #--------------------------------------------------------------------------------------------------------------------------------------------
 import sys
 import random
@@ -94,10 +95,6 @@ def testbataille(plateau,main) :
     indice = []
     nbdecarte = len(plateau)
 
-    print nbdecarte, ' cards on the table...'
-    for card in plateau:
-        print '\t', card
-
     meilleurecarte = meilleurCarte(plateau)
     print meilleurecarte[0], ' ', meilleurecarte[1], ' Wins'
 
@@ -123,7 +120,7 @@ def lookatplayers(players, cards):
         playercards = cards[playerindex]
         print 'Player : ',p, ' [', len(playercards), ']'
         for card in playercards:
-            print '\t', card
+            print '\t\t\t\t', card
     print
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Remove players with no more cards
@@ -134,8 +131,8 @@ def shootloosers(main) :
         for i in range(0, len(main)-1):
             if not main[i]:
                 del main[i]
-                print NomJoueur[i], ' has lost'
-                del NomJoueur[i]
+                print NomJoueurs[i], ' has lost'
+                del NomJoueurs[i]
                 found = True
         if not found:
             break
@@ -172,69 +169,60 @@ def distribuer(nbcartes,nbjoueurs,paquet):
     paquetmelange = paquet[:]
     paquetrestant = []
     taillepaquetmelange = len(paquetmelange)
-    compt=0
 
     for i in range(nbjoueurs):
-        joueurs.append([]) #initialise le nombre de joueurs
+        joueurs.append([]) # initialise le tableau recevant les cartes des joueurs
                 
-    for j in range (nbjoueurs) :
-        for n in range (nbcartes) : #rempli les mains des joueurs
-            joueurs[j].append(paquetmelange[compt])
-            compt+=1
-            for k in range (compt,taillepaquetmelange):
-                paquetrestant.append(paquetmelange[k])
+    for n in range (nbcartes) : # rempli les mains des joueurs
+        for j in range (nbjoueurs) :
+            joueurs[j].append(paquetmelange[0])
+            del paquetmelange[0]
 
-    return joueurs
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
-# Begin a new game
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def InitialisePartie (nbjoueurs,nbcartes) :
-  paquet = fabriquepaquet()
-  paquetmelange = fisherYatesMelange(paquet)
-  return distribuer(nbcartes, nbjoueurs, paquetmelange)
-
+    return joueurs, paquetmelange
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 10 2019, 1.35'
+Version = 'groupe9: Dec 11 2019, 1.44'
+
+# Cards
+couleurs = ['pique','trefle','coeur','carreau']
+valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
+paquet = fabriquepaquet()
+paquetmelange = fisherYatesMelange(paquet)
+pioche = []
 
 # Players
-NomJoueur = ['Margote', 'Yves', 'Charles' ]
+NomJoueurs = ['Margote', 'Yves', 'Charles' ]
 NBCARDSFORPLAYERS = 3
+cardsJoueurs, pioche = distribuer(NBCARDSFORPLAYERS, len(NomJoueurs), paquetmelange)
+
 # Players hands
 # Initializing this array is no longer necessary as we'll fill it 
 # by calling InitialisePartie()
-main = [
+dummymain = [
     [('2','pique'),('3', 'carreau')],
     [('V', 'coeur'),('5', 'pique')],
-    [('D', 'pique'),('7', 'coeur')],
-    [('8', 'carreau'),('as', 'carreau')],
-    [('7', 'carreau'),('R', 'trefle')]
+    [('D', 'pique'),('7', 'coeur')]
 ]
 
-# Some preliminary tasks
-couleurs = ['pique','trefle','coeur','carreau']
-valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
-main = InitialisePartie(len(NomJoueur), NBCARDSFORPLAYERS)
-#paquet = fabriquepaquet()
-#paquet = fisherYatesMelange(paquet)
-#gamers, pioche = distribuer(10, 5, paquet)
-
 # Some welcome message before starting the fight !!!
-print Version
+print '\n\n', Version
 
-lookatplayers(NomJoueur, main)
+lookatplayers(NomJoueurs, cardsJoueurs)
 getString('\n\nStart game <CR>', False)
 
 # Now start serious things
-while len(main[0])>=1 :
-    plateau, main = tourdejeu(main)                     # Put cards on the table
-    print len(main), ' players still in the game'   
-    main = testbataille(plateau,main)                   # Play
-    main = shootloosers(main)                           # Are there any looser ? Yes remove them from the game
-    lookatplayers(NomJoueur, main)
-    getString('Next tour <CR>', False)
+while len(cardsJoueurs[0])>=1 :
+    plateau, cardsJoueurs = tourdejeu(cardsJoueurs)                     # Put cards on the table
+    print len(cardsJoueurs), ' players still in the game'   
+    cardsJoueurs = testbataille(plateau,cardsJoueurs)                   # Play
+    cardsJoueurs = shootloosers(cardsJoueurs)                           # Are there any looser ? Yes remove them from the game
+    if len(NomJoueurs) > 1:
+        lookatplayers(NomJoueurs, cardsJoueurs)
+        getString('Next tour <CR>', False)
+    else:
+        print NomJoueurs[0], ' wins !!!!!!!!!'
+        sys.exit(0)
 
         
