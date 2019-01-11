@@ -198,10 +198,10 @@ def InitialisePartie (nbjoueurs,nbcartes) :
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Start here ;-)
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 09 2019, 1.34'
+Version = 'groupe9: Dec 10 2019, 1.35'
 
 # Players
-NomJoueur = ['Margote', 'Yves', 'Charles','Antoine','Cathy']
+NomJoueur = ['Margote', 'Yves', 'Charles' ]
 NBCARDSFORPLAYERS = 3
 # Players hands
 # Initializing this array is no longer necessary as we'll fill it 
