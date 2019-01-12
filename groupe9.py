@@ -4,7 +4,7 @@
 #   Dec 04 2019 Initial (brought to me by Charlie)
 #   Dec 11 2019 Test number of players remaining and finish the game
 #   Dec 12 2019 Fix bug when looser is in the last position of the list
-#               Improve the core gaming algorithm
+#               Improve the core gaming algorithm, manage the 'bataille'
 #--------------------------------------------------------------------------------------------------------------------------------------------
 import sys
 import random
@@ -109,20 +109,7 @@ def distribuer(nbcartes,nbjoueurs,paquet):
     return joueurs, paquetmelange
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
-# Get the 1st card of each player on its stack (in the cards array) and return it in the plateau
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def getPlateau(cards):
-
-  plateau = []
-
-  nbdejoueurs = len(cards)    
-  for i in range (nbdejoueurs):
-    plateau.append (cards[i][0])
-    del cards[i][0]
-
-  return plateau,cards
-#--------------------------------------------------------------------------------------------------------------------------------------------
-#   There are at least 2 cards with equal value during a playTour()
+#   Should be DELETED
 #--------------------------------------------------------------------------------------------------------------------------------------------
 def bataille (indice,plateau,main) :
  
@@ -157,30 +144,53 @@ def bataille (indice,plateau,main) :
     return main
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
-# Play one tour
-#       plateau : competing cards
-#       cards   : players cards
+# Get the 1st card of each player on its stack (in the cards array) and return it in the plateau
 #--------------------------------------------------------------------------------------------------------------------------------------------
-def playTour(plateau,cards):
-    plateauwinners = []
-    nbdecarte = len(plateau)
+def getPlateau(cards):
+  plateau = []
 
-    meilleurecarte = meilleurCarte(plateau)
-    for i in range (nbdecarte) :        # Once the best card is known, check if there's only one
-        if _VALEURS.index(plateau[i][0]) == _VALEURS.index(meilleurecarte[0]):
-            plateauwinners.append(i)
+  for i in range (len(cards)):
+    plateau.append (cards[i][0])
+    del cards[i][0]
+
+  return plateau,cards
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Play one tour. Can be called in recursive manner if a bataille occurs
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def playTour(cards):
+
+    plateau, cards = getPlateau(cards)    
+    plateauwinners = []
+    sotckcard = []
+    # Search for the winner index
+    while len(plateauwinners) != 1:
+        plateauwinners = []
+        for p in range(len(plateau)):
+            sotckcard.append(plateau[p])
+        meilleurecarte = meilleurCarte(plateau)
+        # Once the best card is known, check if there's only one
+        for i in range (len(plateau)) :        
+            if _VALEURS.index(plateau[i][0]) == _VALEURS.index(meilleurecarte[0]):
+                plateauwinners.append(i)
+        if len(plateauwinners) > 1: # bataille ? 
+            # Skip one card for each competing player (turned back in real game)
+            for w in range(len(plateauwinners)):
+                sotckcard.append(cards[plateauwinners[w]][0])     
+                del cards[plateauwinners[w]][0]     
+            # Now get the playing card for each player
+            plateau = []
+            for w in range(len(plateauwinners)):
+                plateau.append(cards[plateauwinners[w]][0])     
+                del cards[plateauwinners[w]][0]  
+
             
-    if len(plateauwinners) == 1 :   # Only one winner
-        cards[plateauwinners[0]]+=plateau
-    else :                          # bataille again !!
-        cards = bataille(plateauwinners,plateau,cards)
-        
-    return cards
+    cards[plateauwinners[0]]+=sotckcard
+    return cards        
 #--------------------------------------------------------------------------------------------------------------------------------------------
 #   Start here ;-)
 #   Global variables are uppercase and prefixed with an '_'
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 12 2019, 1.53'
+Version = 'groupe9: Dec 12 2019, 1.64'
 
 # Cards
 _COULEURS = ['pique','trefle','coeur','carreau']
@@ -198,9 +208,9 @@ _CARDSJOUEURS, _PIOCHE = distribuer(_NBCARDSFORPLAYERS, len(_NOMJOUEURS), _PAQUE
 # Initializing this array is no longer necessary as we'll fill it 
 # by calling InitialisePartie()
 _CARDSJOUEURS = [
-    [('V','pique'),('9', 'carreau')],
-    [('D', 'coeur'),('5', 'pique')],
-    [('9', 'pique'),('7', 'coeur')]
+    [('V','pique'),('9', 'carreau'),('8', 'carreau')],
+    [('V', 'coeur'),('5', 'pique'),('7', 'carreau')],
+    [('9', 'pique'),('7', 'coeur'),('6', 'carreau')]
 ]
 
 # Some welcome message before starting the fight !!!
@@ -211,9 +221,8 @@ getString('\n\nStart game <CR>', False)
 # Game loop 
 #--------------------------------------------------------------------------------------------------------------------------------------------
 while len(_CARDSJOUEURS[0])>=1 :
-    plateau, _CARDSJOUEURS = getPlateau(_CARDSJOUEURS)                     # Put cards on the table
-    _CARDSJOUEURS = playTour(plateau,_CARDSJOUEURS)                   # Play
-    _CARDSJOUEURS = shootloosers(_CARDSJOUEURS)                           # Are there any looser ? Yes remove them from the game
+    _CARDSJOUEURS = playTour(_CARDSJOUEURS)         # Play
+    _CARDSJOUEURS = shootloosers(_CARDSJOUEURS)     # Are there any looser ? Yes remove them from the game
     if len(_NOMJOUEURS) > 1:
         lookatplayers(_NOMJOUEURS, _CARDSJOUEURS)
         getString('Next tour <CR>', False)
