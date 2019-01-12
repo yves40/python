@@ -155,42 +155,60 @@ def getPlateau(cards):
 
   return plateau,cards
 #--------------------------------------------------------------------------------------------------------------------------------------------
-# Play one tour. Can be called in recursive manner if a bataille occurs
+# Play one tour.
 #--------------------------------------------------------------------------------------------------------------------------------------------
 def playTour(cards):
 
-    plateau, cards = getPlateau(cards)    
-    plateauwinners = []
-    sotckcard = []
-    # Search for the winner index
-    while len(plateauwinners) != 1:
-        plateauwinners = []
-        for p in range(len(plateau)):
-            sotckcard.append(plateau[p])
-        meilleurecarte = meilleurCarte(plateau)
-        # Once the best card is known, check if there's only one
-        for i in range (len(plateau)) :        
-            if _VALEURS.index(plateau[i][0]) == _VALEURS.index(meilleurecarte[0]):
-                plateauwinners.append(i)
-        if len(plateauwinners) > 1: # bataille ? 
-            # Skip one card for each competing player (turned back in real game)
-            for w in range(len(plateauwinners)):
-                sotckcard.append(cards[plateauwinners[w]][0])     
-                del cards[plateauwinners[w]][0]     
-            # Now get the playing card for each player
-            plateau = []
-            for w in range(len(plateauwinners)):
-                plateau.append(cards[plateauwinners[w]][0])     
-                del cards[plateauwinners[w]][0]  
+    try:
+        # Bufferize player names to manage the bataille...
+        nomjoueurs = _NOMJOUEURS[:]
+        # Get the plateau from cards
+        plateau, cards = getPlateau(cards)    
+        plateauwinnersidx = []
+        sotckcard = []
+        # Search for the winner index
+        while len(plateauwinnersidx) != 1:
+            plateauwinnersidx = []
+            plateauwinnersnames = []
+            for p in range(len(plateau)):
+                sotckcard.append(plateau[p])
+            meilleurecarte = meilleurCarte(plateau)
+            # Once the best card is known, check if there's only one
+            for i in range (len(plateau)) :        
+                if _VALEURS.index(plateau[i][0]) == _VALEURS.index(meilleurecarte[0]):
+                    plateauwinnersidx.append(i)
+                    plateauwinnersnames.append(nomjoueurs[i])
+            # Remove player names no longer in the loop
+            while len(plateauwinnersidx) < len(nomjoueurs):
+                for i in range(len(nomjoueurs)):
+                    if not i in plateauwinnersidx:
+                        del nomjoueurs[i]
+                        break
+            if len(plateauwinnersidx) > 1: # bataille ? 
+                # Skip one card for each competing player (turned back in real game)
+                for w in range(len(plateauwinnersidx)):
+                    sotckcard.append(cards[plateauwinnersidx[w]][0])     
+                    del cards[plateauwinnersidx[w]][0]     
+                # Now get the playing card for each player
+                plateau = []
+                for w in range(len(plateauwinnersidx)):
+                    plateau.append(cards[plateauwinnersidx[w]][0])     
+                    del cards[plateauwinnersidx[w]][0]  
 
-            
-    cards[plateauwinners[0]]+=sotckcard
-    return cards        
+                
+        cards[_NOMJOUEURS.index(plateauwinnersnames[0])] += sotckcard
+        return cards
+    except IndexError:
+        print 'No more cards, nobody wins ( index Error in an array )'
+        sys.exit()
+    else:
+        print 'Sorry, this game has no winner'
+        sys.exit()
 #--------------------------------------------------------------------------------------------------------------------------------------------
 #   Start here ;-)
 #   Global variables are uppercase and prefixed with an '_'
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 12 2019, 1.64'
+Version = 'groupe9: Dec 12 2019, 1.77'
 
 # Cards
 _COULEURS = ['pique','trefle','coeur','carreau']
@@ -199,18 +217,18 @@ _PAQUET = fabriquepaquet()
 _PAQUETMELANGE = fisherYatesMelange(_PAQUET)
 _PIOCHE = []
 
-# Players
+# Players   
 _NOMJOUEURS = ['Margote', 'Yves', 'Charles' ]
-_NBCARDSFORPLAYERS = 3
+_NBCARDSFORPLAYERS = 10
 _CARDSJOUEURS, _PIOCHE = distribuer(_NBCARDSFORPLAYERS, len(_NOMJOUEURS), _PAQUETMELANGE)
 
 # Players hands
 # Initializing this array is no longer necessary as we'll fill it 
 # by calling InitialisePartie()
 _CARDSJOUEURS = [
-    [('V','pique'),('9', 'carreau'),('8', 'carreau')],
-    [('V', 'coeur'),('5', 'pique'),('7', 'carreau')],
-    [('9', 'pique'),('7', 'coeur'),('6', 'carreau')]
+    [('V','pique'),('9', 'carreau'),('6', 'carreau'), ('AS', 'trefle'), ('AS', 'coeur')],
+    [('4', 'coeur'),('5', 'pique'),('7', 'carreau'), ('10', 'trefle'), ('2', 'trefle')],
+    [('V', 'carreau'),('7', 'coeur'),('8', 'carreau'), ('3', 'pique'), ('5', 'carreau')]
 ]
 
 # Some welcome message before starting the fight !!!
