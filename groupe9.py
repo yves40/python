@@ -180,7 +180,7 @@ def playTour(plateau,cards):
 #   Start here ;-)
 #   Global variables are uppercase and prefixed with an '_'
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 12 2019, 1.52'
+Version = 'groupe9: Dec 12 2019, 1.53'
 
 # Cards
 _COULEURS = ['pique','trefle','coeur','carreau']
@@ -191,8 +191,8 @@ _PIOCHE = []
 
 # Players
 _NOMJOUEURS = ['Margote', 'Yves', 'Charles' ]
-NBCARDSFORPLAYERS = 3
-_CARDSJOUEURS, _PIOCHE = distribuer(NBCARDSFORPLAYERS, len(_NOMJOUEURS), _PAQUETMELANGE)
+_NBCARDSFORPLAYERS = 3
+_CARDSJOUEURS, _PIOCHE = distribuer(_NBCARDSFORPLAYERS, len(_NOMJOUEURS), _PAQUETMELANGE)
 
 # Players hands
 # Initializing this array is no longer necessary as we'll fill it 
