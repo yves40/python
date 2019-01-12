@@ -3,43 +3,11 @@
 #
 #   Dec 04 2019 Initial (brought to me by Charlie)
 #   Dec 11 2019 Test number of players remaining and finish the game
+#   Dec 12 2019 Fix bug when looser is in the last position of the list
+#               Improve the core gaming algorithm
 #--------------------------------------------------------------------------------------------------------------------------------------------
 import sys
 import random
-
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def bataille (indice,plateau,main) :
- 
-    cartesbataille = []
-    for i in indice :
-        if len(main[i])<=2 :
-            plateau+=main[i]
-            PositionDansIndice=indice.index(i)
-            del indice[PositionDansIndice]
-            del main[i]
-            
-    nbJtotal = len(main)
-    nbJbataille = len(indice)
-    
-    for i in indice :
-        plateau.append (main[i][0])
-        del main[i][0]
-
-    for i in range(nbJtotal):
-        cartesbataille.append((0,0))
-        
-    for j in range (nbJtotal):
-        for k in range (nbJbataille):
-            if j == indice[k]:
-              cartesbataille[j]=main[j][0]
-              del main[j][0]
-
-    cartegagnante = meilleurCarte(cartesbataille)
-    gagnant = cartesbataille.index(cartegagnante)
-    main[gagnant]+=plateau
-      
-    print("cartes batailles :", cartesbataille)
-    return main
 
 #-----------------------------------------------------------------------------------------------------------
 # Just to be able to control the game flow interactively...
@@ -55,55 +23,20 @@ def getString(prompt = "Enter a string please : ", mandatory = False) :
     
     return line[:-1]
 #--------------------------------------------------------------------------------------------------------------------------------------------
-# Get the 1st card of each player on its stack (in the main array) and return it in the plateau
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def tourdejeu (main) :
-
-  plateau = []
-
-  nbdejoueurs = len(main)    
-  for i in range (nbdejoueurs):
-    plateau.append (main[i][0])
-    del main[i][0]
-
-  return plateau,main
-#--------------------------------------------------------------------------------------------------------------------------------------------
 # Determines whon wins the tour
 #--------------------------------------------------------------------------------------------------------------------------------------------
 def meilleurCarte (liste) :
     taille = len(liste)
     position = [] #liste qui va contenir les rangs des valeurs des cartes
     for i in range (taille) : 
-      for elmt in valeur :               
+      for elmt in _VALEURS :               
           if liste[i][0] == elmt :
-            position.append(valeur.index(elmt))
+            position.append(_VALEURS.index(elmt))
             break   # Charlie, I added the break, no need to scan the full array once the card is identified
 
     indexmax = position.index(max(position))
     meilleurcarte = liste[indexmax]
     return meilleurcarte
-#--------------------------------------------------------------------------------------------------------------------------------------------
-# Play one tour
-#--------------------------------------------------------------------------------------------------------------------------------------------
-def testbataille(plateau,main) :
-    indice = []
-    nbdecarte = len(plateau)
-
-    meilleurecarte = meilleurCarte(plateau)
-    print meilleurecarte[0], ' ', meilleurecarte[1], ' Wins'
-
-    for i in range (nbdecarte) :
-        if valeur.index(plateau[i][0]) == valeur.index(meilleurecarte[0]):
-            indice.append(i)
-            
-    if len(indice) == 1 :
-        main[indice[0]]+=plateau
-    else :
-        print("bataille : ")
-        main = bataille(indice,plateau,main)
-        
-    return main
-
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Dump players and cards
 #--------------------------------------------------------------------------------------------------------------------------------------------
@@ -119,19 +52,20 @@ def lookatplayers(players, cards):
 #--------------------------------------------------------------------------------------------------------------------------------------------
 # Remove players with no more cards
 #--------------------------------------------------------------------------------------------------------------------------------------------
-def shootloosers(main) :
+def shootloosers(playercards) :
     while True:
         found = False
-        for i in range(0, len(main)-1):
-            if not main[i]:
-                del main[i]
-                print NomJoueurs[i], ' has lost'
-                del NomJoueurs[i]
+        for i in range(len(playercards)):
+            if not playercards[i]:
+                del playercards[i]
+                print _NOMJOUEURS[i], ' has lost'
+                del _NOMJOUEURS[i]
                 found = True
+                break               # One looser found, recheck
         if not found:
             break
 
-    return main
+    return playercards
 
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
@@ -139,10 +73,10 @@ def shootloosers(main) :
 #--------------------------------------------------------------------------------------------------------------------------------------------
 def fabriquepaquet():
   paquet=[]
-  lenvaleur = len(valeur)
-  for i in range(len(couleurs)) :
+  lenvaleur = len(_VALEURS)
+  for i in range(len(_COULEURS)) :
     for j in range (lenvaleur) :
-      paquet.append((valeur[j],couleurs[i]))
+      paquet.append((_VALEURS[j],_COULEURS[i]))
   return paquet
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
@@ -175,48 +109,116 @@ def distribuer(nbcartes,nbjoueurs,paquet):
     return joueurs, paquetmelange
 
 #--------------------------------------------------------------------------------------------------------------------------------------------
-# Start here ;-)
+# Get the 1st card of each player on its stack (in the cards array) and return it in the plateau
 #--------------------------------------------------------------------------------------------------------------------------------------------
-Version = 'groupe9: Dec 11 2019, 1.45'
+def getPlateau(cards):
+
+  plateau = []
+
+  nbdejoueurs = len(cards)    
+  for i in range (nbdejoueurs):
+    plateau.append (cards[i][0])
+    del cards[i][0]
+
+  return plateau,cards
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#   There are at least 2 cards with equal value during a playTour()
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def bataille (indice,plateau,main) :
+ 
+    cartesbataille = []
+    for i in indice :
+        if len(main[i])<=2 :
+            plateau+=main[i]
+            PositionDansIndice=indice.index(i)
+            del indice[PositionDansIndice]
+            del main[i]
+            
+    nbJtotal = len(main)
+    nbJbataille = len(indice)
+    
+    for i in indice :
+        plateau.append (main[i][0])
+        del main[i][0]
+
+    for i in range(nbJtotal):
+        cartesbataille.append((0,0))
+        
+    for j in range (nbJtotal):
+        for k in range (nbJbataille):
+            if j == indice[k]:
+              cartesbataille[j]=main[j][0]
+              del main[j][0]
+
+    cartegagnante = meilleurCarte(cartesbataille)
+    gagnant = cartesbataille.index(cartegagnante)
+    main[gagnant]+=plateau
+      
+    return main
+
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Play one tour
+#       plateau : competing cards
+#       cards   : players cards
+#--------------------------------------------------------------------------------------------------------------------------------------------
+def playTour(plateau,cards):
+    plateauwinners = []
+    nbdecarte = len(plateau)
+
+    meilleurecarte = meilleurCarte(plateau)
+    for i in range (nbdecarte) :        # Once the best card is known, check if there's only one
+        if _VALEURS.index(plateau[i][0]) == _VALEURS.index(meilleurecarte[0]):
+            plateauwinners.append(i)
+            
+    if len(plateauwinners) == 1 :   # Only one winner
+        cards[plateauwinners[0]]+=plateau
+    else :                          # bataille again !!
+        cards = bataille(plateauwinners,plateau,cards)
+        
+    return cards
+#--------------------------------------------------------------------------------------------------------------------------------------------
+#   Start here ;-)
+#   Global variables are uppercase and prefixed with an '_'
+#--------------------------------------------------------------------------------------------------------------------------------------------
+Version = 'groupe9: Dec 12 2019, 1.52'
 
 # Cards
-couleurs = ['pique','trefle','coeur','carreau']
-valeur = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
-paquet = fabriquepaquet()
-paquetmelange = fisherYatesMelange(paquet)
-pioche = []
+_COULEURS = ['pique','trefle','coeur','carreau']
+_VALEURS = ['2','3','4','5','6','7','8','9','10','V','D','R','AS']
+_PAQUET = fabriquepaquet()
+_PAQUETMELANGE = fisherYatesMelange(_PAQUET)
+_PIOCHE = []
 
 # Players
-NomJoueurs = ['Margote', 'Yves', 'Charles' ]
+_NOMJOUEURS = ['Margote', 'Yves', 'Charles' ]
 NBCARDSFORPLAYERS = 3
-cardsJoueurs, pioche = distribuer(NBCARDSFORPLAYERS, len(NomJoueurs), paquetmelange)
+_CARDSJOUEURS, _PIOCHE = distribuer(NBCARDSFORPLAYERS, len(_NOMJOUEURS), _PAQUETMELANGE)
 
 # Players hands
 # Initializing this array is no longer necessary as we'll fill it 
 # by calling InitialisePartie()
-dummymain = [
-    [('2','pique'),('3', 'carreau')],
-    [('V', 'coeur'),('5', 'pique')],
-    [('D', 'pique'),('7', 'coeur')]
+_CARDSJOUEURS = [
+    [('V','pique'),('9', 'carreau')],
+    [('D', 'coeur'),('5', 'pique')],
+    [('9', 'pique'),('7', 'coeur')]
 ]
 
 # Some welcome message before starting the fight !!!
 print '\n\n', Version
-
-lookatplayers(NomJoueurs, cardsJoueurs)
+lookatplayers(_NOMJOUEURS, _CARDSJOUEURS)     # Who plays, whith which cards
 getString('\n\nStart game <CR>', False)
-
-# Now start serious things
-while len(cardsJoueurs[0])>=1 :
-    plateau, cardsJoueurs = tourdejeu(cardsJoueurs)                     # Put cards on the table
-    print len(cardsJoueurs), ' players still in the game'   
-    cardsJoueurs = testbataille(plateau,cardsJoueurs)                   # Play
-    cardsJoueurs = shootloosers(cardsJoueurs)                           # Are there any looser ? Yes remove them from the game
-    if len(NomJoueurs) > 1:
-        lookatplayers(NomJoueurs, cardsJoueurs)
+#--------------------------------------------------------------------------------------------------------------------------------------------
+# Game loop 
+#--------------------------------------------------------------------------------------------------------------------------------------------
+while len(_CARDSJOUEURS[0])>=1 :
+    plateau, _CARDSJOUEURS = getPlateau(_CARDSJOUEURS)                     # Put cards on the table
+    _CARDSJOUEURS = playTour(plateau,_CARDSJOUEURS)                   # Play
+    _CARDSJOUEURS = shootloosers(_CARDSJOUEURS)                           # Are there any looser ? Yes remove them from the game
+    if len(_NOMJOUEURS) > 1:
+        lookatplayers(_NOMJOUEURS, _CARDSJOUEURS)
         getString('Next tour <CR>', False)
     else:
-        print NomJoueurs[0], ' wins !!!!!!!!!'
-        sys.exit(0)
+        print _NOMJOUEURS[0], ' wins !!!!!!!!!'
+        sys.exit()
 
         
