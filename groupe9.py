@@ -196,6 +196,7 @@ def playTour(cards):
                     del cards[plateauwinnersidx[w]][0]  
 
                 
+
         cards[_NOMJOUEURS.index(plateauwinnersnames[0])] += sotckcard
         return cards
     except IndexError:
