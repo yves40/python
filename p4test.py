@@ -10,7 +10,7 @@ def transmit_code(code):
             elif i == '0':
                 print 'Even'
             else:
-                print '*************'
+                print '*************', i
 
 if __name__ == '__main__':
-    transmit_code('0 1 0 1')
+    transmit_code('0101111')
