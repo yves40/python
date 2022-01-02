@@ -2,6 +2,7 @@
 # -*- coding: iso-8859-15 -*-#
 #
 #   EXERCICE 1
+#   ===================================================
 #   Calcul du résultat R en fonction du nombre choisi N
 #   R = (3N+2)*2
 #
