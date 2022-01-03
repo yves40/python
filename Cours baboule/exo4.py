@@ -25,10 +25,17 @@ if A < B :
   if B < C :
     print 'B est au mileu: ', A, B, C
   else:
-    print 'C est au mileu: ', A, C, B
+    if A < C :
+      print 'C est au mileu: ', A, C, B
+    else:
+      print 'A est au mileu: ', C, A, B
 else:
   if A < C :
     print 'A est au milieu: ', B, A, C
   else:
-    print 'C est au milieu: ', A, C, B
+    if B < C:
+      print 'C est au milieu: ', A, C, B
+    else:
+      print 'B est au milieu: ', A, B, C
+
         
