@@ -20,22 +20,26 @@ sys.stdout.write('Entrez le nombre ENTIER C : ')
 C = sys.stdin.readline()
 C = math.floor(float(C))
 print 'C = ', C
-
+# Quel nombre est au milieu ? Solutions possibles :
+#   A B C **
+#   A C B **
+#   C A B **
+#   B A C **
+#   B C A **
+#   C B A **
 if A < B :
   if B < C :
-    print 'B est au mileu: ', A, B, C
+    print 'B est au milieu: ', A, B, C
+  elif A < C:
+    print 'C est au milieu: ', A, C, B
   else:
-    if A < C :
-      print 'C est au mileu: ', A, C, B
-    else:
-      print 'A est au mileu: ', C, A, B
+    print 'A est au milieu: ', C, A, B    
 else:
-  if A < C :
-    print 'A est au milieu: ', B, A, C
+  if B > C :
+    print 'B est au milieu: ', C, B, A
+  elif A > C:
+    print 'C est au milieu: ', B, C, A
   else:
-    if B < C:
-      print 'C est au milieu: ', A, C, B
-    else:
-      print 'B est au milieu: ', A, B, C
+    print 'A est au milieu: ', B, A, C
 
         
