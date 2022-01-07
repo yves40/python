@@ -11,7 +11,7 @@ print '-----------------------------------------------'
 print 'Rappel des seuils IMC'
 print ' Extra   si : POIDS < 18.5'
 print ' Normal  si : 18.5 < POIDS < 25'
-print ' Mauvais si : POIDS > 18.5'
+print ' Mauvais si : POIDS > 25'
 print '-----------------------------------------------'
 sys.stdout.write('Entrez votre taille (m) : ')
 TAILLE = sys.stdin.readline()
