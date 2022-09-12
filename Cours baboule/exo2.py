@@ -8,11 +8,10 @@
 #   
 import sys
 
-sys.stdout.write('Entrez le resultat : ')
-R = sys.stdin.readline()
+R = input('Entrez le resultat : ')
 R = int(R)
-print 'le resultat est :', R
+print ('le resultat est :', R)
 N = R/6
 N = N - 4/6
-print 'Et voila le nombre choisi : ', N
+print ('Et voila le nombre choisi : ', N)
 

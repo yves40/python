@@ -8,14 +8,13 @@
 #
 import sys
 
-sys.stdout.write('Entrez un nombre : ')
-N = sys.stdin.readline()
+N = input("Entrez un nombre : ")
 N = int(N)
-print 'le nombre choisi est :', N
+print ('le nombre choisi est :', N)
 
 R = N*3
 R = R+2
 R = R*2
 
-print 'Et voila le resultat : ', R
+print ('Et voila le resultat : ', R)
 

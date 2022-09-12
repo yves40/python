@@ -8,18 +8,15 @@
 #
 import sys, math
 
-sys.stdout.write('Entrez le nombre ENTIER A : ')
-A = sys.stdin.readline()
+A = input('Entrez le nombre ENTIER A : ')
 A = math.floor(float(A))
-print 'A = ', A
-sys.stdout.write('Entrez le nombre ENTIER B : ')
-B = sys.stdin.readline()
+print ('A = ', A)
+B = input('Entrez le nombre ENTIER B : ')
 B = math.floor(float(B))
-print 'B = ', B
-sys.stdout.write('Entrez le nombre ENTIER C : ')
-C = sys.stdin.readline()
+print ('B = ', B)
+C = input('Entrez le nombre ENTIER C : ')
 C = math.floor(float(C))
-print 'C = ', C
+print ('C = ', C)
 # Quel nombre est au milieu ? Solutions possibles :
 #   A B C **
 #   A C B **
@@ -29,17 +26,17 @@ print 'C = ', C
 #   C B A **
 if A < B :
   if B < C :
-    print 'B est au milieu: ', A, B, C
+    print ('B est au milieu: ', A, B, C)
   elif A < C:
-    print 'C est au milieu: ', A, C, B
+    print ('C est au milieu: ', A, C, B)
   else:
-    print 'A est au milieu: ', C, A, B    
+    print ('A est au milieu: ', C, A, B )   
 else:
   if B > C :
-    print 'B est au milieu: ', C, B, A
+    print ('B est au milieu: ', C, B, A)
   elif A > C:
-    print 'C est au milieu: ', B, C, A
+    print ('C est au milieu: ', B, C, A)
   else:
-    print 'A est au milieu: ', B, A, C
+    print ('A est au milieu: ', B, A, C)
 
         
